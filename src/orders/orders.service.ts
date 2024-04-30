@@ -3,6 +3,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaClient } from '@prisma/client';
 import { RpcException } from '@nestjs/microservices';
 import { OrdersPaginationDto } from './dto/orders-pagination.dto';
+import { ChangeOrderStatusDto } from './dto/change-order-status.dto';
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
@@ -50,5 +51,17 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     });
   }
 
-  changeStatus() {}
+  async changeStatus({ id, status }: ChangeOrderStatusDto) {
+    return this.order
+      .update({
+        where: { id },
+        data: { status },
+      })
+      .catch(() => {
+        throw new RpcException({
+          status: HttpStatus.NOT_FOUND,
+          message: `Order with id ${id} not found`,
+        });
+      });
+  }
 }
