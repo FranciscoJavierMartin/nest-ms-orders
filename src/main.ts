@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { envs } from './config/envs';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { AppModule } from './app.module';
+import { envs } from './config';
 
 async function bootstrap() {
   const logger = new Logger('OrdersMS-main');
@@ -10,9 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.NATS,
       options: {
-        port: envs.port,
+        servers: envs.NATSServers,
       },
     },
   );
